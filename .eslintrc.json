@@ -16,11 +16,33 @@
 		"@typescript-eslint"
 	],
 	"rules": {
+		"import/extensions": [
+			"error",
+			"ignorePackages",
+			{
+				"ts": "never",
+				"js": "never"
+			}
+		],
 		"indent": [
 			"error",
 			"tab"
 		],
 		"linebreak-style": "off",
-		"no-tabs": "off"
+		"no-tabs": "off",
+		"no-restricted-syntax": [
+			"error",
+			"WithStatement"
+		]
+	},
+	"settings": {
+		"import/resolver": {
+			"node": {
+				"extensions": [
+					".ts",
+					".js"
+				]
+			}
+		}
 	}
 }
