@@ -1,0 +1,13 @@
+name: Setup WeChat Developer Tools
+description: Install WeChat Developer Tools in the CI environment and load your project to run automated tests.
+inputs:
+  project-path:
+    description: The root directory of your project, where project.config.json exists.
+    default: '.'
+  port:
+    description: The port number of WebSocket endpoint of WeChat Developer Tools.
+    default: 8888
+runs:
+  using: node
+  pre: build.js
+  main: dist/index.js

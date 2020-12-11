@@ -1,0 +1,36 @@
+{
+  "name": "setup-wechat-devtools",
+  "version": "0.1.0",
+  "description": "Setup WeChat DevTools in GitHub Actions",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --incremental",
+    "test": "eslint src/**/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/takashiro/setup-wechat-devtools.git"
+  },
+  "keywords": [
+    "wechat",
+    "devtools"
+  ],
+  "author": "Kazuichi Takashiro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/takashiro/setup-wechat-devtools/issues"
+  },
+  "homepage": "https://github.com/takashiro/setup-wechat-devtools#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.12",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
+    "eslint": "^7.15.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "typescript": "^4.1.2"
+  }
+}
