@@ -40,6 +40,6 @@ export default class Launcher {
 			throw new Error('Failed to locate CLI of WeChat Developer Tools.');
 		}
 
-		await exec(cli, ['auto', '--project', this.projectPath, '--auto-port', this.port]);
+		await exec(`"${cli}"`, ['auto', '--project', this.projectPath, '--auto-port', this.port]);
 	}
 }
