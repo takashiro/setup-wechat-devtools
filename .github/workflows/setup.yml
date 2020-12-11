@@ -23,13 +23,20 @@ jobs:
       with:
         repository: takashiro/bezier-werewolf-wechat
         ref: e4cd8f53a62eff6648a4654280a1a4c1afc17f0e
+        path: test-project
 
     - name: npm ci, build
       run: |
         npm ci
         npm run build
+      working-directory: test-project
 
     - uses: takashiro/setup-wechat-devtools@canary
+      with:
+        project-path: test-project
 
     - name: npm test
       run: npm test
+      working-directory: test-project
+      env:
+        CI: false
