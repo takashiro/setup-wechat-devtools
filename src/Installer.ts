@@ -5,63 +5,80 @@ import * as https from 'https';
 import { IncomingMessage } from 'http';
 import { exec } from '@actions/exec';
 
-const installerLink: Record<string, string> = {
-	win32: 'https://servicewechat.com/wxa-dev-logic/download_redirect?type=x64&from=mpwiki&download_version=1032011120&version_type=1',
-	darwin: 'https://servicewechat.com/wxa-dev-logic/download_redirect?type=darwin&from=mpwiki&download_version=1032011120&version_type=1',
+interface InstallSource {
+	url: string;
+	ext: string;
+	sha1sum: string;
+}
+
+const installSource: Record<string, InstallSource> = {
+	win32: {
+		url: 'https://servicewechat.com/wxa-dev-logic/download_redirect?type=x64&from=mpwiki&download_version=1032011120&version_type=1',
+		ext: 'exe',
+		sha1sum: '1c17b662fabbc13204f48bda3b91944b59676a85',
+	},
+	darwin: {
+		url: 'https://servicewechat.com/wxa-dev-logic/download_redirect?type=darwin&from=mpwiki&download_version=1032011120&version_type=1',
+		ext: 'dmg',
+		sha1sum: '',
+	},
 };
 
-const installerExt: Record<string, string> = {
-	win32: 'exe',
-	darwin: 'dmg',
-};
-
-function downloadUrl(source: string): Promise<IncomingMessage> {
+function openConnection(source: string): Promise<IncomingMessage> {
 	return new Promise((resolve) => {
 		const req = https.get(source, resolve);
 		req.end();
 	});
 }
 
-export default class Installer {
-	protected platform: NodeJS.Platform;
+function save(res: IncomingMessage, saveTo: string): Promise<void> {
+	return new Promise((resolve, reject) => {
+		const output = fs.createWriteStream(saveTo, 'binary');
+		output.once('close', resolve);
+		output.once('error', reject);
+		res.pipe(output);
+	});
+}
 
-	protected installerPath: string;
+export default class Installer {
+	protected source: InstallSource;
+
+	protected saveTo: string;
 
 	constructor() {
-		this.platform = os.platform();
-		this.installerPath = path.join(os.tmpdir(), `devtools.${this.getExt()}`);
+		const source = installSource[os.platform()];
+		if (!source) {
+			throw new Error('The current platform is not supported.');
+		}
+		this.source = source;
+		this.saveTo = path.join(os.tmpdir(), `devtool.${source.ext}`);
 	}
 
 	async download(): Promise<void> {
 		const res = await this.openConnection();
-		this.save(res);
+		await save(res, this.saveTo);
 	}
 
 	async install(): Promise<void> {
-		const { installerPath } = this;
-		if (!installerPath) {
+		if (!fs.existsSync(this.saveTo)) {
 			throw new Error('Installer has not been downloaded yet.');
 		}
 
-		if (this.platform === 'win32') {
-			await exec(installerPath, ['/S']);
+		if (this.source.ext === 'exe') {
+			await exec(this.saveTo, ['/S']);
 		} else {
 			throw new Error('The platform is not supported yet.');
 		}
 	}
 
 	async openConnection(): Promise<IncomingMessage> {
-		let source = this.getSource();
-		if (!source) {
-			return Promise.reject(new Error('The current platform is not supported.'));
-		}
-
+		let link = this.source.url;
 		for (;;) {
-			const res: IncomingMessage = await downloadUrl(source);
+			const res: IncomingMessage = await openConnection(link);
 			if (res.statusCode === 301 || res.statusCode === 302) {
 				const { location } = res.headers;
 				if (location) {
-					source = location;
+					link = location;
 				} else {
 					throw new Error('Received redirect without a new location.');
 				}
@@ -71,26 +88,5 @@ export default class Installer {
 				return res;
 			}
 		}
-	}
-
-	save(res: IncomingMessage): Promise<void> {
-		return new Promise((resolve, reject) => {
-			const output = fs.createWriteStream(this.installerPath, 'binary');
-			output.once('close', resolve);
-			output.once('error', reject);
-			res.pipe(output);
-		});
-	}
-
-	isSupported(): boolean {
-		return this.platform === 'win32';
-	}
-
-	getSource(): string | undefined {
-		return installerLink[this.platform];
-	}
-
-	getExt(): string | undefined {
-		return installerExt[this.platform];
 	}
 }
