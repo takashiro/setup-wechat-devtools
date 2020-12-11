@@ -1,0 +1,34 @@
+name: Setup
+
+on:
+  push:
+    branches:
+      - canary
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  setup:
+
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: takashiro/bezier-werewolf-wechat
+
+    - name: npm ci, build
+      run: |
+        npm ci
+        npm run build
+
+    - uses: takashiro/setup-wechat-devtools@canary
+
+    - name: npm test
+      run: npm test

@@ -8,6 +8,6 @@ inputs:
     description: The port number of WebSocket endpoint of WeChat Developer Tools.
     default: 8888
 runs:
-  using: node
+  using: node12
   pre: build.js
   main: dist/index.js
