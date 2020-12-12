@@ -30,6 +30,7 @@
 		],
 		"linebreak-style": "off",
 		"no-await-in-loop": "off",
+		"no-continue": "off",
 		"no-tabs": "off",
 		"no-restricted-syntax": [
 			"error",

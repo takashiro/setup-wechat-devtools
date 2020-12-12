@@ -1,10 +1,14 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as util from 'util';
 import * as exec from 'execa';
 
 import email from '../util/email';
 import exist from '../util/exist';
+
+const readdir = util.promisify(fs.readdir);
+const writeFile = util.promisify(fs.writeFile);
 
 const searchDir: Record<string, string[]> = {
 	win32: [
@@ -49,6 +53,24 @@ async function sendLoginCode(qrcode: string): Promise<void> {
 	});
 }
 
+async function allowCli(): Promise<void> {
+	const appDataDir = process.env.LOCALAPPDATA;
+	if (!appDataDir) {
+		throw new Error('AppData directory is not found.');
+	}
+
+	const userDataDir = path.join(appDataDir, '微信开发者工具', 'User Data');
+	const userDirs = await readdir(userDataDir);
+	for (const userDir of userDirs) {
+		if (userDir === 'Crashpad' || userDir.startsWith('.')) {
+			continue;
+		}
+
+		const markFile = path.join(userDataDir, userDir, 'Default', '.ide-status');
+		await writeFile(markFile, 'On', { encoding: 'utf-8' });
+	}
+}
+
 export default class Launcher {
 	protected projectPath: string;
 
@@ -69,14 +91,12 @@ export default class Launcher {
 
 	async login(): Promise<void> {
 		await this.exec('微信开发者工具.exe');
+		await allowCli();
 		await this.cli(['quit']);
 
 		const loginQrCode = path.join(os.tmpdir(), 'login-qrcode.png');
 		await Promise.all([
-			this.cli(['login', '-f', 'image', '-o', loginQrCode], {
-				cwd: this.cwd,
-				input: 'y\ny\n',
-			}),
+			this.cli(['login', '-f', 'image', '-o', loginQrCode]),
 			sendLoginCode(loginQrCode),
 		]);
 	}
