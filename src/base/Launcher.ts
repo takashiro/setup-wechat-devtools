@@ -96,18 +96,24 @@ export default class Launcher {
 	async login(): Promise<void> {
 		const loginQrCode = path.join(os.tmpdir(), 'login-qrcode.png');
 		await Promise.all([
-			this.cli(['login', '-f', 'image', '-o', loginQrCode]),
+			this.cli('login', '-f', 'image', '-o', loginQrCode),
 			sendLoginCode(loginQrCode),
 		]);
 	}
 
-	async launch(): Promise<void> {
-		await this.cli(['auto', '--project', path.join(process.cwd(), this.projectPath), '--auto-port', this.port]);
+	async build(): Promise<void> {
+		if (!fs.existsSync(path.join(this.projectPath, 'package.json'))) {
+			return;
+		}
+		await this.cli('build-npm', '--project', path.join(process.cwd(), this.projectPath));
 	}
 
-	cli(args: string[], options?: exec.Options): exec.ExecaChildProcess<string> {
-		args.push('--disable-gpu');
-		return this.exec('cli.bat', args, options);
+	async launch(): Promise<void> {
+		await this.cli('auto', '--project', path.join(process.cwd(), this.projectPath), '--auto-port', this.port);
+	}
+
+	cli(...args: string[]): exec.ExecaChildProcess<string> {
+		return this.exec('cli.bat', args);
 	}
 
 	exec(cmd: string, args?: string[], options?: exec.Options): exec.ExecaChildProcess<string> {

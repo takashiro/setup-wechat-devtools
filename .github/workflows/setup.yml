@@ -22,10 +22,10 @@ jobs:
     - uses: actions/checkout@v2
       with:
         repository: takashiro/bezier-werewolf-wechat
-        ref: e4cd8f53a62eff6648a4654280a1a4c1afc17f0e
+        ref: 6b8c7f41a6421e425dc5d19edb690cb947db4413
         path: test-project
 
-    - name: npm ci, build
+    - name: Build project
       run: |
         npm ci
         npm run build
@@ -42,8 +42,6 @@ jobs:
         smtp-sender: ${{ secrets.SMTP_SENDER }}
         smtp-receiver: ${{ secrets.SMTP_RECEIVER }}
 
-    - name: npm test
-      run: npm test
+    - name: Run end-to-end tests
+      run: npm run jest-e2e
       working-directory: test-project
-      env:
-        CI: false

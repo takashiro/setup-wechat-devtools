@@ -22,6 +22,9 @@ import Launcher from './base/Launcher';
 		core.info('A Login QR Code of WeChat DevTools will be sent to your email.');
 		await launcher.login();
 
+		core.info('Build the project...');
+		await launcher.build();
+
 		core.info('Launching the project...');
 		await launcher.launch();
 	} catch (error) {
