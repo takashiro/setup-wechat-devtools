@@ -54,33 +54,40 @@ export default class Launcher {
 
 	protected port: string;
 
+	protected readonly cwd: string;
+
 	constructor(projectPath: string, port: string) {
 		this.projectPath = projectPath;
 		this.port = port;
-	}
 
-	async start(): Promise<void> {
 		const cwd = findInstallDir();
 		if (!cwd) {
 			throw new Error('Failed to locate CLI of WeChat Developer Tools.');
 		}
+		this.cwd = cwd;
+	}
 
-		const options: exec.Options = {
-			cwd,
+	async login(): Promise<void> {
+		await exec('微信开发者工具.exe', {
+			cwd: this.cwd,
 			stdio: 'inherit',
-		};
+		});
 
 		const loginQrCode = path.join(os.tmpdir(), 'login-qrcode.png');
-
-		await exec('微信开发者工具.exe', options);
 		await Promise.all([
 			exec('cli.bat', ['login', '-f', 'image', '-o', loginQrCode], {
-				cwd,
-				input: 'y\n',
+				cwd: this.cwd,
+				input: 'y\ny\n',
 				stdout: 'inherit',
 			}),
 			sendLoginCode(loginQrCode),
 		]);
-		await exec('cli.bat', ['auto', '--project', this.projectPath, '--auto-port', this.port], options);
+	}
+
+	async launch(): Promise<void> {
+		await exec('cli.bat', ['auto', '--project', this.projectPath, '--auto-port', this.port], {
+			cwd: this.cwd,
+			stdio: 'inherit',
+		});
 	}
 }
