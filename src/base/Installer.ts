@@ -6,6 +6,8 @@ import { IncomingMessage } from 'http';
 import * as exec from 'execa';
 import * as ps from 'ps-list';
 
+import sha1 from '../util/sha1';
+
 interface InstallSource {
 	url: string;
 	ext: string;
@@ -68,6 +70,11 @@ export default class Installer {
 	async download(): Promise<void> {
 		const res = await this.openConnection();
 		await save(res, this.saveTo);
+
+		const fingerprint = await sha1(this.saveTo);
+		if (fingerprint !== this.source.sha1sum) {
+			throw new Error(`Downloaded file may be corrupted. Incorrect SHA1 fingerprint: ${fingerprint}`);
+		}
 	}
 
 	async install(): Promise<void> {

@@ -1,6 +1,6 @@
 import * as core from '@actions/core';
-import Installer from './Installer';
-import Launcher from './Launcher';
+import Installer from './base/Installer';
+import Launcher from './base/Launcher';
 
 (async function main(): Promise<void> {
 	try {
