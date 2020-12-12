@@ -8,7 +8,6 @@ import email from '../util/email';
 import exist from '../util/exist';
 
 const readdir = util.promisify(fs.readdir);
-const writeFile = util.promisify(fs.writeFile);
 
 const searchDir: Record<string, string[]> = {
 	win32: [
@@ -67,7 +66,7 @@ async function allowCli(): Promise<void> {
 		}
 
 		const markFile = path.join(userDataDir, userDir, 'Default', '.ide-status');
-		await writeFile(markFile, 'On', { encoding: 'utf-8' });
+		await exist(markFile);
 	}
 }
 
@@ -89,11 +88,12 @@ export default class Launcher {
 		this.cwd = cwd;
 	}
 
-	async login(): Promise<void> {
-		await this.exec('微信开发者工具.exe', ['--disable-gpu']);
+	async prepare(): Promise<void> {
+		await this.exec('微信开发者工具.exe', ['--disable-gpu', '--enable-service-port']);
 		await allowCli();
-		await this.cli(['quit']);
+	}
 
+	async login(): Promise<void> {
 		const loginQrCode = path.join(os.tmpdir(), 'login-qrcode.png');
 		await Promise.all([
 			this.cli(['login', '-f', 'image', '-o', loginQrCode]),

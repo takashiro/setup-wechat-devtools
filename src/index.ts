@@ -16,6 +16,9 @@ import Launcher from './base/Launcher';
 		const port = core.getInput('port') || '8888';
 		const launcher = new Launcher(projectPath, port);
 
+		core.info('Prepare user profile...');
+		await launcher.prepare();
+
 		core.info('A Login QR Code of WeChat DevTools will be sent to your email.');
 		await launcher.login();
 
