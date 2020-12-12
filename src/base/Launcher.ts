@@ -68,24 +68,29 @@ export default class Launcher {
 	}
 
 	async login(): Promise<void> {
-		await exec('微信开发者工具.exe', {
-			cwd: this.cwd,
-			stdio: 'inherit',
-		});
+		await this.exec('微信开发者工具.exe');
+		await this.cli(['quit']);
 
 		const loginQrCode = path.join(os.tmpdir(), 'login-qrcode.png');
 		await Promise.all([
-			exec('cli.bat', ['login', '-f', 'image', '-o', loginQrCode], {
+			this.cli(['login', '-f', 'image', '-o', loginQrCode], {
 				cwd: this.cwd,
 				input: 'y\ny\n',
-				stdout: 'inherit',
 			}),
 			sendLoginCode(loginQrCode),
 		]);
 	}
 
 	async launch(): Promise<void> {
-		await exec('cli.bat', ['auto', '--project', this.projectPath, '--auto-port', this.port], {
+		await this.cli(['auto', '--project', this.projectPath, '--auto-port', this.port]);
+	}
+
+	cli(args: string[], options?: exec.Options): exec.ExecaChildProcess<string> {
+		return this.exec('cli.bat', args, options);
+	}
+
+	exec(cmd: string, args?: string[], options?: exec.Options): exec.ExecaChildProcess<string> {
+		return exec(cmd, args, options || {
 			cwd: this.cwd,
 			stdio: 'inherit',
 		});
