@@ -2,17 +2,17 @@ import * as fs from 'fs';
 import * as os from 'os';
 import { exec } from '@actions/exec';
 
-const workDir: Record<string, string[]> = {
+const searchDir: Record<string, string[]> = {
 	win32: [
-		'C:/Program Files (x86)/Tencent/微信web开发者工具/cli.bat',
-		'C:/Program Files/Tencent/微信web开发者工具/cli.bat',
+		'C:\\Progra~1\\Tencent\\微信web开发者工具',
+		'C:\\Progra~2\\Tencent\\微信web开发者工具',
 	],
 	darwin: [
 	],
 };
 
-function findCli(): string {
-	const dirs = workDir[os.platform()];
+function findInstallDir(): string {
+	const dirs = searchDir[os.platform()];
 	if (!dirs) {
 		return '';
 	}
@@ -35,11 +35,16 @@ export default class Launcher {
 	}
 
 	async start(): Promise<void> {
-		const cli = findCli();
-		if (!cli) {
+		const cwd = findInstallDir();
+		if (!cwd) {
 			throw new Error('Failed to locate CLI of WeChat Developer Tools.');
 		}
 
-		await exec(`"${cli}"`, ['auto', '--project', this.projectPath, '--auto-port', this.port]);
+		const exitCode = await exec('cli.bat', ['auto', '--project', this.projectPath, '--auto-port', this.port], {
+			cwd,
+		});
+		if (exitCode) {
+			throw new Error(`Failed to load the project. CLI exited with ${exitCode}`);
+		}
 	}
 }
