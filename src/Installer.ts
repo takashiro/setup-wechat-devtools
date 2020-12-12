@@ -3,7 +3,8 @@ import * as os from 'os';
 import * as path from 'path';
 import * as https from 'https';
 import { IncomingMessage } from 'http';
-import { exec } from '@actions/exec';
+import * as exec from 'execa';
+import * as ps from 'ps-list';
 
 interface InstallSource {
 	url: string;
@@ -40,6 +41,16 @@ function save(res: IncomingMessage, saveTo: string): Promise<void> {
 	});
 }
 
+async function waitFor(processName: string): Promise<void> {
+	for (;;) {
+		const processes = await ps();
+		const installer = processes.find((p) => p.name === processName);
+		if (!installer) {
+			break;
+		}
+	}
+}
+
 export default class Installer {
 	protected source: InstallSource;
 
@@ -51,7 +62,7 @@ export default class Installer {
 			throw new Error('The current platform is not supported.');
 		}
 		this.source = source;
-		this.saveTo = path.join(os.tmpdir(), `devtool.${source.ext}`);
+		this.saveTo = path.join(os.tmpdir(), `wechat-devtool-installer.${source.ext}`);
 	}
 
 	async download(): Promise<void> {
@@ -66,6 +77,7 @@ export default class Installer {
 
 		if (this.source.ext === 'exe') {
 			await exec(this.saveTo, ['/S']);
+			await waitFor(`wechat-devtool-installer.${this.source.ext}`);
 		} else {
 			throw new Error('The platform is not supported yet.');
 		}

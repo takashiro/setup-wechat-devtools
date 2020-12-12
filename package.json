@@ -23,7 +23,8 @@
   "homepage": "https://github.com/takashiro/setup-wechat-devtools#readme",
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/exec": "^1.0.4"
+    "execa": "^5.0.0",
+    "ps-list": "^7.2.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.12",

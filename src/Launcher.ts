@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as os from 'os';
-import { exec } from '@actions/exec';
+import * as exec from 'execa';
 
 const searchDir: Record<string, string[]> = {
 	win32: [
@@ -40,11 +40,9 @@ export default class Launcher {
 			throw new Error('Failed to locate CLI of WeChat Developer Tools.');
 		}
 
-		const exitCode = await exec('cli.bat', ['auto', '--project', this.projectPath, '--auto-port', this.port], {
+		await exec('cli.bat', ['auto', '--project', this.projectPath, '--auto-port', this.port], {
 			cwd,
+			stdio: 'inherit',
 		});
-		if (exitCode) {
-			throw new Error(`Failed to load the project. CLI exited with ${exitCode}`);
-		}
 	}
 }
