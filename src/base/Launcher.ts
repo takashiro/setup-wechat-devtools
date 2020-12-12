@@ -1,6 +1,9 @@
 import * as fs from 'fs';
 import * as os from 'os';
+import * as util from 'util';
 import * as exec from 'execa';
+
+const readdir = util.promisify(fs.readdir);
 
 const searchDir: Record<string, string[]> = {
 	win32: [
@@ -40,9 +43,13 @@ export default class Launcher {
 			throw new Error('Failed to locate CLI of WeChat Developer Tools.');
 		}
 
-		await exec('cli.bat', ['auto', '--project', this.projectPath, '--auto-port', this.port], {
+		const options: exec.Options = {
 			cwd,
 			stdio: 'inherit',
-		});
+		};
+
+		await exec('微信开发者工具.exe', options);
+		await exec('cli.bat', ['login'], options);
+		await exec('cli.bat', ['auto', '--project', this.projectPath, '--auto-port', this.port], options);
 	}
 }
