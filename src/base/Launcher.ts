@@ -102,7 +102,7 @@ export default class Launcher {
 	}
 
 	async launch(): Promise<void> {
-		await this.cli(['auto', '--project', this.projectPath, '--auto-port', this.port]);
+		await this.cli(['auto', '--project', path.join(process.cwd(), this.projectPath), '--auto-port', this.port]);
 	}
 
 	cli(args: string[], options?: exec.Options): exec.ExecaChildProcess<string> {
