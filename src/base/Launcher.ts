@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import * as os from 'os';
-import * as util from 'util';
+import * as path from 'path';
 import * as exec from 'execa';
 
-const readdir = util.promisify(fs.readdir);
+import email from '../util/email';
+import exist from '../util/exist';
 
 const searchDir: Record<string, string[]> = {
 	win32: [
@@ -27,6 +28,27 @@ function findInstallDir(): string {
 	return '';
 }
 
+async function sendLoginCode(qrcode: string): Promise<void> {
+	await exist(qrcode);
+
+	const workflow = process.env.GITHUB_WORKFLOW;
+	const actor = process.env.GITHUB_ACTOR;
+	const repository = process.env.GITHUB_REPOSITORY;
+	const sha = process.env.GITHUB_SHA;
+
+	await email({
+		subject: `[${workflow}] Login Request for ${repository} by ${actor}`,
+		html: `<p>Commit: ${sha}</p><p><img src="cid:login-qrcode" /></p>`,
+		attachments: [
+			{
+				filename: 'login-qrcode.png',
+				path: qrcode,
+				cid: 'login-qrcode',
+			},
+		],
+	});
+}
+
 export default class Launcher {
 	protected projectPath: string;
 
@@ -48,8 +70,17 @@ export default class Launcher {
 			stdio: 'inherit',
 		};
 
+		const loginQrCode = path.join(os.tmpdir(), 'login-qrcode.png');
+
 		await exec('微信开发者工具.exe', options);
-		await exec('cli.bat', ['login'], options);
+		await Promise.all([
+			exec('cli.bat', ['login', '-f', 'image', '-o', loginQrCode], {
+				cwd,
+				input: 'y\n',
+				stdout: 'inherit',
+			}),
+			sendLoginCode(loginQrCode),
+		]);
 		await exec('cli.bat', ['auto', '--project', this.projectPath, '--auto-port', this.port], options);
 	}
 }

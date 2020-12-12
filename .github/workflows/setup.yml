@@ -34,6 +34,13 @@ jobs:
     - uses: takashiro/setup-wechat-devtools@canary
       with:
         project-path: test-project
+        smtp-host: ${{ secrets.SMTP_HOST }}
+        smtp-port: ${{ secrets.SMTP_HOST }}
+        smtp-secure: true
+        smtp-username: ${{ secrets.SMTP_USERNAME }}
+        smtp-password: ${{ secrets.SMTP_PASSWORD }}
+        smtp-sender: ${{ secrets.SMTP_SENDER }}
+        smtp-receiver: ${{ secrets.SMTP_RECEIVER }}
 
     - name: npm test
       run: npm test
