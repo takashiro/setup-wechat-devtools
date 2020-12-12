@@ -90,7 +90,7 @@ export default class Launcher {
 	}
 
 	async login(): Promise<void> {
-		await this.exec('微信开发者工具.exe');
+		await this.exec('微信开发者工具.exe', ['--disable-gpu']);
 		await allowCli();
 		await this.cli(['quit']);
 
@@ -106,6 +106,7 @@ export default class Launcher {
 	}
 
 	cli(args: string[], options?: exec.Options): exec.ExecaChildProcess<string> {
+		args.push('--disable-gpu');
 		return this.exec('cli.bat', args, options);
 	}
 
