@@ -25,7 +25,6 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "execa": "^5.0.0",
-    "nodemailer": "^6.4.17",
     "ps-list": "^7.2.0"
   },
   "devDependencies": {
