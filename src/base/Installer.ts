@@ -10,6 +10,7 @@ import * as core from '@actions/core';
 import sha1 from '../util/sha1';
 import join from '../util/join';
 
+const mkdir = util.promisify(fs.mkdir);
 const copyFile = util.promisify(fs.copyFile);
 
 interface InstallSource {
@@ -82,7 +83,8 @@ export default class Installer {
 			throw new Error('Installer has not been downloaded yet.');
 		}
 
-		if (this.source.ext === 'exe') {
+		const win32 = this.source.ext === 'exe';
+		if (win32) {
 			await exec(this.saveTo, ['/S']);
 			await join('wechat-devtool-installer.exe');
 		} else {
@@ -91,20 +93,15 @@ export default class Installer {
 			await exec('hdiutil detach "/Volumes/微信开发者工具 Stable/"', { shell: true });
 		}
 
-		core.addPath(this.source.location);
-		const cli = core.getInput('cli') || 'wxdev';
-		if (cli === 'cli') {
-			return;
-		}
+		const rootDir = path.dirname(path.dirname(__dirname));
+		const binPath = path.join(rootDir, 'bin');
+		await mkdir(binPath);
+		core.addPath(binPath);
 
-		if (this.source.cli.endsWith('.bat')) {
-			await copyFile(
-				path.join(this.source.location, this.source.cli),
-				path.join(this.source.location, `${cli}.bat`),
-			);
-		} else {
-			await exec(`sudo ln -s ${this.source.location}/cli ${this.source.location}/${cli}`, { shell: true });
-		}
+		const cli = core.getInput('cli') || 'wxdev';
+		const source = path.join(rootDir, 'src/bin', `cli.${win32 ? 'bat' : 'sh'}`);
+		const target = path.join(binPath, win32 ? `${cli}.bat` : cli);
+		await copyFile(source, target);
 	}
 
 	async openConnection(): Promise<IncomingMessage> {
