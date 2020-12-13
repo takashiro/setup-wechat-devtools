@@ -2,8 +2,6 @@ name: Setup WeChat Developer Tools
 
 description: >
   Install WeChat Developer Tools in the CI environment and load your project to run automated tests.
-  As required by WeChat Developer Tools, it's necessary to login via WeChat (scanning a QR code).
-  You'll need an SMTP server to send the QR code to your email address.
 
 branding:
   icon: upload
