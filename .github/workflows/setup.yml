@@ -24,4 +24,4 @@ jobs:
         cli: wxd
 
     - name: Run WeChat DevTools
-      run: echo 'y' | wxd quit
+      run: wxd
