@@ -99,7 +99,7 @@ export default class Installer {
 		core.addPath(binPath);
 
 		const cli = core.getInput('cli') || 'wxdev';
-		const source = path.join(rootDir, 'src/bin', `cli.${win32 ? 'bat' : 'sh'}`);
+		const source = path.join(rootDir, 'src', 'bin', `cli.${win32 ? 'bat' : 'sh'}`);
 		const target = path.join(binPath, win32 ? `${cli}.bat` : cli);
 		await copyFile(source, target);
 	}
