@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd "/Application/wechatwebdevtoolsdeta.app/Contents/MacOS"
+cd "/Applications/wechatwebdevtools.app/Contents/MacOS/"
 
 #if [ $PWD == "/Application/wechatwebdevtoolsdeta.app/Contents/MacOS" ]
 #then
