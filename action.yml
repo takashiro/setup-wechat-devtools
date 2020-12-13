@@ -10,6 +10,11 @@ branding:
   color: green
 
 inputs:
+  cli:
+    description: >
+      The executable name of WeChat Developer Tools.
+      The command will be installed and linked to cli.bat or ./cli in WeChat Developer Tools.
+    default: wxdev
 
 runs:
   using: node12

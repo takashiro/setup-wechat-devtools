@@ -11,37 +11,17 @@ on:
 
 jobs:
   setup:
-
-    runs-on: windows-latest
-
     strategy:
       matrix:
         node-version: [14.x]
+        os: [windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        repository: takashiro/bezier-werewolf-wechat
-        ref: 6b8c7f41a6421e425dc5d19edb690cb947db4413
-        path: test-project
-
-    - name: Build project
-      run: |
-        npm ci
-        npm run build
-      working-directory: test-project
-
     - uses: takashiro/setup-wechat-devtools@canary
       with:
-        project-path: test-project
-        smtp-host: ${{ secrets.SMTP_HOST }}
-        smtp-port: ${{ secrets.SMTP_HOST }}
-        smtp-secure: true
-        smtp-username: ${{ secrets.SMTP_USERNAME }}
-        smtp-password: ${{ secrets.SMTP_PASSWORD }}
-        smtp-sender: ${{ secrets.SMTP_SENDER }}
-        smtp-receiver: ${{ secrets.SMTP_RECEIVER }}
+        cli: wxd
 
-    - name: Run end-to-end tests
-      run: npm run jest-e2e
-      working-directory: test-project
+    - name: Run WeChat DevTools
+      run: echo 'y' | wxd quit
