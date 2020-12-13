@@ -26,7 +26,7 @@ const installSource: Record<string, InstallSource> = {
 		ext: 'exe',
 		sha1sum: '1c17b662fabbc13204f48bda3b91944b59676a85',
 		cli: 'cli.bat',
-		location: 'C:\\Progra~2\\Tencent\\微信web开发者工具',
+		location: 'C:\\Program Files (x86)\\Tencent\\微信web开发者工具',
 	},
 	darwin: {
 		url: 'https://servicewechat.com/wxa-dev-logic/download_redirect?type=darwin&from=mpwiki&download_version=1032011120&version_type=1',
