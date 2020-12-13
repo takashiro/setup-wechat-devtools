@@ -18,5 +18,5 @@ inputs:
 
 runs:
   using: node12
-  pre: build.js
+  pre: install.js
   main: dist/index.js

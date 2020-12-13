@@ -4,7 +4,7 @@
   "description": "Setup WeChat DevTools in GitHub Actions",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "debug": "tsc --incremental",
     "test": "eslint src/**/*.ts"
   },
@@ -35,6 +35,7 @@
     "eslint": "^7.15.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
+    "rimraf": "^3.0.2",
     "typescript": "^4.1.2"
   }
 }
