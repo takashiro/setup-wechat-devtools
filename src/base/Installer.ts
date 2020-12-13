@@ -94,14 +94,18 @@ export default class Installer {
 		}
 
 		const rootDir = path.dirname(path.dirname(__dirname));
-		const binPath = path.join(rootDir, 'bin');
-		await mkdir(binPath);
-		core.addPath(binPath);
+		const fromDir = path.join(rootDir, 'src', 'bin');
+		const toDir = path.join(rootDir, 'bin');
+		await mkdir(toDir);
+		core.addPath(toDir);
 
 		const cli = core.getInput('cli') || 'wxdev';
-		const source = path.join(rootDir, 'src', 'bin', `cli.${win32 ? 'bat' : 'sh'}`);
-		const target = path.join(binPath, win32 ? `${cli}.bat` : cli);
-		await copyFile(source, target);
+		if (win32) {
+			await copyFile(path.join(fromDir, 'cli.cmd'), path.join(toDir, `${cli}.cmd`));
+			await copyFile(path.join(fromDir, 'cli.ps1'), path.join(toDir, `${cli}.ps1`));
+		} else {
+			await copyFile(path.join(fromDir, 'cli.sh'), path.join(toDir, cli));
+		}
 	}
 
 	async openConnection(): Promise<IncomingMessage> {
