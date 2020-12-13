@@ -21,11 +21,18 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
+
     - name: Install
       run: npm ci --production
+
     - name: Setup WeChat DevTools
       uses: ./
-      with:
-        cli: wxd
+
     - name: Run WeChat DevTools
-      run: wxd
+      run: wxdev
+
+    - name: Test a path with space
+      run: |
+        mkdir "a b"
+        cd "a b"
+        wxdev
