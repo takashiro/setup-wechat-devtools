@@ -19,9 +19,13 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: takashiro/setup-wechat-devtools@canary
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+    - name: Install
+      run: npm ci --production
+    - name: Setup WeChat DevTools
+      uses: ./
       with:
         cli: wxd
-
     - name: Run WeChat DevTools
       run: wxd
