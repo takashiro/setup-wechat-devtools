@@ -4,7 +4,7 @@ description: >
   Install WeChat Developer Tools in the CI environment and load your project to run automated tests.
 
 branding:
-  icon: upload
+  icon: tool
   color: green
 
 inputs:
