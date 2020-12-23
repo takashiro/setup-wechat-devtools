@@ -8,8 +8,8 @@ This action installs WeChat Developer Tools in your CI environment.
 ```yaml
 - uses: takashiro/setup-wechat-devtools@v1
   with:
-    ## Optional. Add an alias command to the cli (or cli.bat on Windows) in WeChat DevTools.
-    ## So that the command can be used anywhere.
+    ## Add an alias command to the cli (or cli.bat on Windows) in WeChat DevTools.
+    ## So that the command can be used anywhere. Default: wxdev
     cli: 'wxdev'
 ```
 <!-- end usage -->
