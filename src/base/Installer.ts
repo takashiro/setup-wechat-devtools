@@ -21,18 +21,23 @@ interface InstallSource {
 	location: string;
 }
 
+function createDownloadLink(type: string, version: string): string {
+	return `https://servicewechat.com/wxa-dev-logic/download_redirect?type=${type}&from=mpwiki&download_version=${version}&version_type=1`;
+}
+
+const devtoolVersion = '1032101150';
 const installSource: Record<string, InstallSource> = {
 	win32: {
-		url: 'https://servicewechat.com/wxa-dev-logic/download_redirect?type=x64&from=mpwiki&download_version=1032011120&version_type=1',
+		url: createDownloadLink('x64', devtoolVersion),
 		ext: 'exe',
-		sha1sum: '1c17b662fabbc13204f48bda3b91944b59676a85',
+		sha1sum: '3357ae1a50e9b8295eb7a9cf86ac3cb03f0e8657',
 		cli: 'cli.bat',
 		location: 'C:\\Program Files (x86)\\Tencent\\微信web开发者工具',
 	},
 	darwin: {
-		url: 'https://servicewechat.com/wxa-dev-logic/download_redirect?type=darwin&from=mpwiki&download_version=1032011120&version_type=1',
+		url: createDownloadLink('darwin', devtoolVersion),
 		ext: 'dmg',
-		sha1sum: '96f05da1daed6e17796bb51f34b0d493cbaed236',
+		sha1sum: '1698d35268c0b72451266b98c5ed98aae1b1e2a6',
 		cli: 'cli',
 		location: '/Applications/wechatwebdevtools.app/Contents/MacOS/',
 	},
