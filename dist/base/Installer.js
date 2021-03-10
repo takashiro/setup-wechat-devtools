@@ -7,30 +7,11 @@ const util = require("util");
 const https = require("https");
 const exec = require("execa");
 const core = require("@actions/core");
+const InstallSource_1 = require("./InstallSource");
 const sha1_1 = require("../util/sha1");
 const join_1 = require("../util/join");
 const mkdir = util.promisify(fs.mkdir);
 const copyFile = util.promisify(fs.copyFile);
-function createDownloadLink(type, version) {
-    return `https://servicewechat.com/wxa-dev-logic/download_redirect?type=${type}&from=mpwiki&download_version=${version}&version_type=1`;
-}
-const devtoolVersion = '1052102010';
-const installSource = {
-    win32: {
-        url: createDownloadLink('x64', devtoolVersion),
-        ext: 'exe',
-        sha1sum: '40d4234eb919418005631a217be63af652e52d2b',
-        cli: 'cli.bat',
-        location: 'C:\\Program Files (x86)\\Tencent\\微信web开发者工具',
-    },
-    darwin: {
-        url: createDownloadLink('darwin', devtoolVersion),
-        ext: 'dmg',
-        sha1sum: '3b2e22ae91897721ab6179b0e2da2eb0d649c239',
-        cli: 'cli',
-        location: '/Applications/wechatwebdevtools.app/Contents/MacOS/',
-    },
-};
 function openConnection(source) {
     return new Promise((resolve) => {
         const req = https.get(source, resolve);
@@ -47,7 +28,7 @@ function save(res, saveTo) {
 }
 class Installer {
     constructor() {
-        const source = installSource[os.platform()];
+        const source = InstallSource_1.installSourceMap[os.platform()];
         if (!source) {
             throw new Error('The current platform is not supported.');
         }
