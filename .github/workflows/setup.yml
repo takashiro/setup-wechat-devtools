@@ -30,6 +30,11 @@ jobs:
     - name: Run WeChat DevTools
       run: wxdev
 
+    - name: Run WeChat DevTools (Windows Command Prompt)
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: wxdev
+      shell: cmd
+
     - name: Test a path with space
       run: |
         mkdir "a b"
