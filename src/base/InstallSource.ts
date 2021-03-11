@@ -3,7 +3,8 @@ interface InstallSource {
 	ext: string;
 	sha1sum: string;
 	cli: string;
-	location: string;
+	installDir: string;
+	workDir: string;
 }
 
 function createDownloadLink(type: string, version: string): string {
@@ -17,14 +18,16 @@ export const installSourceMap: Record<string, InstallSource> = {
 		ext: 'exe',
 		sha1sum: '40d4234eb919418005631a217be63af652e52d2b',
 		cli: 'cli.bat',
-		location: 'C:\\Program Files (x86)\\Tencent\\微信web开发者工具',
+		installDir: 'C:\\Program Files (x86)\\Tencent\\微信web开发者工具',
+		workDir: '',
 	},
 	darwin: {
 		url: createDownloadLink('darwin', devtoolVersion),
 		ext: 'dmg',
 		sha1sum: '3b2e22ae91897721ab6179b0e2da2eb0d649c239',
 		cli: 'cli',
-		location: '/Applications/wechatwebdevtools.app/Contents/MacOS',
+		installDir: '/Applications/wechatwebdevtools.app',
+		workDir: 'Contents/MacOS',
 	},
 };
 
