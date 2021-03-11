@@ -54,7 +54,7 @@ class Installer {
         }
         else {
             await exec(`hdiutil attach ${this.saveTo}`, { shell: true });
-            await exec('sudo cp -r "/Volumes/微信开发者工具 Stable/wechatwebdevtools.app" /Applications/wechatwebdevtools.app', { shell: true });
+            await exec(`sudo cp -r "/Volumes/微信开发者工具 Stable/wechatwebdevtools.app" ${this.source.installDir}`, { shell: true });
             await exec('hdiutil detach "/Volumes/微信开发者工具 Stable/"', { shell: true });
         }
         const rootDir = path.dirname(path.dirname(__dirname));
