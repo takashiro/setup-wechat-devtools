@@ -1,10 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = require("@actions/core");
-const Installer_1 = require("./base/Installer");
+const InstallerFactory_1 = require("./base/InstallerFactory");
 (async function main() {
+    const setup = InstallerFactory_1.default.getInstance();
+    if (!setup) {
+        core.setFailed('The operating system is not supported.');
+        return;
+    }
     try {
-        const setup = new Installer_1.default();
         core.info('Downloading WeChat DevTools...');
         await setup.download();
         core.info('Installing...');

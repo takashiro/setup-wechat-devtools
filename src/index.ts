@@ -1,10 +1,14 @@
 import * as core from '@actions/core';
-import Installer from './base/Installer';
+import InstallerFactory from './base/InstallerFactory';
 
 (async function main(): Promise<void> {
-	try {
-		const setup = new Installer();
+	const setup = InstallerFactory.getInstance();
+	if (!setup) {
+		core.setFailed('The operating system is not supported.');
+		return;
+	}
 
+	try {
 		core.info('Downloading WeChat DevTools...');
 		await setup.download();
 

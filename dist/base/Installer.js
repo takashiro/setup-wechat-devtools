@@ -7,7 +7,6 @@ const util = require("util");
 const https = require("https");
 const exec = require("execa");
 const core = require("@actions/core");
-const InstallSource_1 = require("./InstallSource");
 const sha1_1 = require("../util/sha1");
 const join_1 = require("../util/join");
 const mkdir = util.promisify(fs.mkdir);
@@ -27,35 +26,40 @@ function save(res, saveTo) {
     });
 }
 class Installer {
-    constructor() {
-        const source = InstallSource_1.installSourceMap[os.platform()];
-        if (!source) {
-            throw new Error('The current platform is not supported.');
-        }
-        this.source = source;
-        this.saveTo = path.join(os.tmpdir(), `wechat-devtool-installer.${source.ext}`);
+    constructor(config) {
+        this.downloadUrl = config.downloadUrl;
+        this.saveTo = path.join(os.tmpdir(), `wechat-devtool-installer.${config.fileExtension}`);
+        this.sha1sum = config.sha1sum;
+        this.installDir = config.installDir;
+        this.workDir = path.join(config.installDir, config.workDir);
+    }
+    getInstallDir() {
+        return this.installDir;
+    }
+    getWorkDir() {
+        return this.workDir;
     }
     async download() {
         const res = await this.openConnection();
         await save(res, this.saveTo);
         const fingerprint = await sha1_1.default(this.saveTo);
-        if (fingerprint !== this.source.sha1sum) {
-            throw new Error(`Downloaded file may be corrupted. Incorrect SHA1 fingerprint: ${fingerprint} Expected: ${this.source.sha1sum}`);
+        if (fingerprint !== this.sha1sum) {
+            throw new Error(`Downloaded file may be corrupted. Incorrect SHA1 fingerprint: ${fingerprint} Expected: ${this.sha1sum}`);
         }
     }
     async install() {
         if (!fs.existsSync(this.saveTo)) {
             throw new Error('Installer has not been downloaded yet.');
         }
-        const win32 = this.source.ext === 'exe';
+        const win32 = this.saveTo.endsWith('.exe');
         if (win32) {
             await exec(this.saveTo, ['/S']);
             await join_1.default('wechat-devtool-installer.exe');
         }
         else {
-            await exec(`hdiutil attach ${this.saveTo}`, { shell: true });
-            await exec(`sudo cp -r "/Volumes/微信开发者工具 Stable/wechatwebdevtools.app" ${this.source.installDir}`, { shell: true });
-            await exec('hdiutil detach "/Volumes/微信开发者工具 Stable/"', { shell: true });
+            await exec('hdiutil', ['attach', this.saveTo]);
+            await exec('sudo', ['cp', '-r', '/Volumes/微信开发者工具 Stable/wechatwebdevtools.app', this.installDir]);
+            await exec('hdiutil', ['detach', '/Volumes/微信开发者工具 Stable/']);
         }
         const rootDir = path.dirname(path.dirname(__dirname));
         const fromDir = path.join(rootDir, 'src', 'bin');
@@ -72,7 +76,7 @@ class Installer {
         }
     }
     async openConnection() {
-        let link = this.source.url;
+        let link = this.downloadUrl;
         for (;;) {
             const res = await openConnection(link);
             if (res.statusCode === 301 || res.statusCode === 302) {
