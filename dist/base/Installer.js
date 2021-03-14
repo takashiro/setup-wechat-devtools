@@ -4,27 +4,13 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const util = require("util");
-const https = require("https");
 const exec = require("execa");
 const core = require("@actions/core");
+const cache = require("@actions/tool-cache");
 const sha1_1 = require("../util/sha1");
 const join_1 = require("../util/join");
 const mkdir = util.promisify(fs.mkdir);
 const copyFile = util.promisify(fs.copyFile);
-function openConnection(source) {
-    return new Promise((resolve) => {
-        const req = https.get(source, resolve);
-        req.end();
-    });
-}
-function save(res, saveTo) {
-    return new Promise((resolve, reject) => {
-        const output = fs.createWriteStream(saveTo, 'binary');
-        output.once('close', resolve);
-        output.once('error', reject);
-        res.pipe(output);
-    });
-}
 class Installer {
     constructor(config) {
         this.downloadUrl = config.downloadUrl;
@@ -40,9 +26,8 @@ class Installer {
         return this.workDir;
     }
     async download() {
-        const res = await this.openConnection();
-        await save(res, this.saveTo);
-        const fingerprint = await sha1_1.default(this.saveTo);
+        const savedTo = await cache.downloadTool(this.downloadUrl, this.saveTo);
+        const fingerprint = await sha1_1.default(savedTo);
         if (fingerprint !== this.sha1sum) {
             throw new Error(`Downloaded file may be corrupted. Incorrect SHA1 fingerprint: ${fingerprint} Expected: ${this.sha1sum}`);
         }
@@ -73,27 +58,6 @@ class Installer {
         }
         else {
             await copyFile(path.join(fromDir, 'cli.sh'), path.join(toDir, cli));
-        }
-    }
-    async openConnection() {
-        let link = this.downloadUrl;
-        for (;;) {
-            const res = await openConnection(link);
-            if (res.statusCode === 301 || res.statusCode === 302) {
-                const { location } = res.headers;
-                if (location) {
-                    link = location;
-                }
-                else {
-                    throw new Error('Received redirect without a new location.');
-                }
-            }
-            else if (res.statusCode !== 200) {
-                throw new Error(`Invalid download source. Status Code: ${res.statusCode}`);
-            }
-            else {
-                return res;
-            }
         }
     }
 }
