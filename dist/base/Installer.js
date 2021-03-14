@@ -19,13 +19,9 @@ class Installer {
         this.saveTo = path.join(os.tmpdir(), `wechat-devtool-installer.${config.fileExtension}`);
         this.sha1sum = config.sha1sum;
         this.installDir = config.installDir;
-        this.workDir = path.join(config.installDir, config.workDir);
     }
     getInstallDir() {
         return this.installDir;
-    }
-    getWorkDir() {
-        return this.workDir;
     }
     async download() {
         const savedTo = await cache.downloadTool(this.downloadUrl, this.saveTo);

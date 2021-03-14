@@ -19,7 +19,6 @@ interface InstallerConfig {
 	fileExtension: string;
 	sha1sum: string;
 	installDir: string;
-	workDir: string;
 }
 
 export default class Installer {
@@ -35,8 +34,6 @@ export default class Installer {
 
 	protected installDir: string;
 
-	protected workDir: string;
-
 	constructor(config: InstallerConfig) {
 		this.version = config.version;
 		this.platform = config.platform;
@@ -44,15 +41,10 @@ export default class Installer {
 		this.saveTo = path.join(os.tmpdir(), `wechat-devtool-installer.${config.fileExtension}`);
 		this.sha1sum = config.sha1sum;
 		this.installDir = config.installDir;
-		this.workDir = path.join(config.installDir, config.workDir);
 	}
 
 	getInstallDir(): string {
 		return this.installDir;
-	}
-
-	getWorkDir(): string {
-		return this.workDir;
 	}
 
 	async download(): Promise<void> {

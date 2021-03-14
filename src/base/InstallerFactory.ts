@@ -16,7 +16,6 @@ export const installSourceMap: Record<string, Installer> = {
 		fileExtension: 'exe',
 		sha1sum: '40d4234eb919418005631a217be63af652e52d2b',
 		installDir: 'C:\\Program Files (x86)\\Tencent\\微信web开发者工具', // Not configurable yet?
-		workDir: '',
 	}),
 	darwin: new Installer({
 		version: devtoolVersion,
@@ -25,7 +24,6 @@ export const installSourceMap: Record<string, Installer> = {
 		fileExtension: 'dmg',
 		sha1sum: '3b2e22ae91897721ab6179b0e2da2eb0d649c239',
 		installDir: '/Applications/wechatwebdevtools.app',
-		workDir: 'Contents/MacOS',
 	}),
 };
 
