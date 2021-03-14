@@ -13,6 +13,7 @@ const InstallerFactory_1 = require("./base/InstallerFactory");
         await setup.download();
         core.info('Installing...');
         await setup.install();
+        await setup.vars();
     }
     catch (error) {
         core.setFailed(error);

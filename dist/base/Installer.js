@@ -13,6 +13,8 @@ const mkdir = util.promisify(fs.mkdir);
 const copyFile = util.promisify(fs.copyFile);
 class Installer {
     constructor(config) {
+        this.version = config.version;
+        this.platform = config.platform;
         this.downloadUrl = config.downloadUrl;
         this.saveTo = path.join(os.tmpdir(), `wechat-devtool-installer.${config.fileExtension}`);
         this.sha1sum = config.sha1sum;
@@ -36,8 +38,7 @@ class Installer {
         if (!fs.existsSync(this.saveTo)) {
             throw new Error('Installer has not been downloaded yet.');
         }
-        const win32 = this.saveTo.endsWith('.exe');
-        if (win32) {
+        if (this.platform === 'x64') {
             await exec(this.saveTo, ['/S']);
             await join_1.default('wechat-devtool-installer.exe');
         }
@@ -46,13 +47,15 @@ class Installer {
             await exec('sudo', ['cp', '-r', '/Volumes/微信开发者工具 Stable/wechatwebdevtools.app', this.installDir]);
             await exec('hdiutil', ['detach', '/Volumes/微信开发者工具 Stable/']);
         }
+    }
+    async vars() {
         const rootDir = path.dirname(path.dirname(__dirname));
         const fromDir = path.join(rootDir, 'src', 'bin');
         const toDir = path.join(rootDir, 'bin');
         await mkdir(toDir);
         core.addPath(toDir);
         const cli = core.getInput('cli') || 'wxdev';
-        if (win32) {
+        if (this.platform === 'x64') {
             await copyFile(path.join(fromDir, 'cli.cmd'), path.join(toDir, `${cli}.cmd`));
             await copyFile(path.join(fromDir, 'cli.ps1'), path.join(toDir, `${cli}.ps1`));
         }

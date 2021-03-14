@@ -14,6 +14,7 @@ import InstallerFactory from './base/InstallerFactory';
 
 		core.info('Installing...');
 		await setup.install();
+		await setup.vars();
 	} catch (error) {
 		core.setFailed(error);
 	}
