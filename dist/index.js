@@ -13,6 +13,8 @@ const InstallerFactory_1 = require("./base/InstallerFactory");
         await setup.download();
         core.info('Installing...');
         await setup.install();
+        core.info(`Installed to ${setup.getInstallDir()}`);
+        core.info('Setting up environment variables...');
         await setup.vars();
     }
     catch (error) {
