@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
-import InstallerFactory from './base/InstallerFactory';
+import Installer from './base/Installer';
 
 (async function main(): Promise<void> {
-	const setup = InstallerFactory.getInstance();
+	const setup = Installer.getInstance();
 	if (!setup) {
 		core.setFailed('The operating system is not supported.');
 		return;
@@ -17,6 +17,10 @@ import InstallerFactory from './base/InstallerFactory';
 		core.info('Setting up environment variables...');
 		await setup.vars();
 	} catch (error) {
-		core.setFailed(error);
+		if (error instanceof Error) {
+			core.setFailed(error);
+		} else {
+			core.setFailed(String(error));
+		}
 	}
 }());

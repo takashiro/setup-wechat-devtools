@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = require("@actions/core");
-const InstallerFactory_1 = require("./base/InstallerFactory");
+const Installer_1 = require("./base/Installer");
 (async function main() {
-    const setup = InstallerFactory_1.default.getInstance();
+    const setup = Installer_1.default.getInstance();
     if (!setup) {
         core.setFailed('The operating system is not supported.');
         return;
@@ -18,6 +18,11 @@ const InstallerFactory_1 = require("./base/InstallerFactory");
         await setup.vars();
     }
     catch (error) {
-        core.setFailed(error);
+        if (error instanceof Error) {
+            core.setFailed(error);
+        }
+        else {
+            core.setFailed(String(error));
+        }
     }
 }());

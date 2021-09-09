@@ -13,6 +13,10 @@ inputs:
       The executable name of WeChat Developer Tools.
       The command will be installed and linked to cli.bat or ./cli in WeChat Developer Tools.
     default: wxdev
+  version:
+    description: The version of WeChat DevTools
+  sha1sum:
+    description: SHA1 fingerprint of the installer
 
 runs:
   using: node12

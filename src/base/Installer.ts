@@ -9,6 +9,8 @@ import * as cache from '@actions/tool-cache';
 import sha1 from '../util/sha1';
 import join from '../util/join';
 
+import { read as readConfig } from './Config';
+
 const mkdir = util.promisify(fs.mkdir);
 const copyFile = util.promisify(fs.copyFile);
 
@@ -19,6 +21,10 @@ interface InstallerConfig {
 	fileExtension: string;
 	sha1sum: string;
 	installDir: string;
+}
+
+function createDownloadLink(type: string, version: string): string {
+	return `https://servicewechat.com/wxa-dev-logic/download_redirect?type=${type}&from=mpwiki&download_version=${version}&version_type=1`;
 }
 
 export default class Installer {
@@ -84,5 +90,32 @@ export default class Installer {
 		} else {
 			await copyFile(path.join(fromDir, 'cli.sh'), path.join(toDir, cli));
 		}
+	}
+
+	static getInstance(): Installer | undefined {
+		const config = readConfig();
+		if (os.platform() === 'win32') {
+			return new Installer({
+				version: config.version,
+				platform: 'x64',
+				downloadUrl: createDownloadLink('x64', config.version),
+				fileExtension: 'exe',
+				sha1sum: config.sha1sum,
+				installDir: 'C:\\Program Files (x86)\\Tencent\\微信web开发者工具', // Not configurable yet?
+			});
+		}
+
+		if (os.platform() === 'darwin') {
+			return new Installer({
+				version: config.version,
+				platform: 'darwin',
+				downloadUrl: createDownloadLink('darwin', config.version),
+				fileExtension: 'dmg',
+				sha1sum: config.sha1sum,
+				installDir: '/Applications/wechatwebdevtools.app',
+			});
+		}
+
+		return undefined;
 	}
 }
