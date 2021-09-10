@@ -5,12 +5,12 @@ const os = require("os");
 const core = require("@actions/core");
 const defaultConfig = {
     win32: {
-        version: '1052103200',
-        sha1sum: 'b72b1edff94d46177e5f0d452163bfea3dac16ca',
+        version: '1052108130',
+        sha1sum: 'aaa0596a6bad74426e50aa8b93b46f0fd0779489',
     },
     darwin: {
-        version: '1052103200',
-        sha1sum: '313ea5b360f5680b74c17a28200f14d46d3ab2b8',
+        version: '1052108130',
+        sha1sum: '660f64dbb0d4a607011fbf6346cb0346208e58d4',
     },
 };
 function read() {
