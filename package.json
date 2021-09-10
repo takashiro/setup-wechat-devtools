@@ -1,6 +1,6 @@
 {
   "name": "setup-wechat-devtools",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "description": "Setup WeChat DevTools in GitHub Actions",
   "main": "dist/index.js",
   "scripts": {
